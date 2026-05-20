@@ -653,19 +653,19 @@ contract YulStorageMasterPractice {
         }
     }
 
-    function writeAddressListValue(
-        address user,
-        uint256 index,
-        uint256 newValue
-    )
-        public
-    {
-        assembly {
+    // function writeAddressListValue(
+    //     address user,
+    //     uint256 index,
+    //     uint256 newValue
+    // )
+    //     public
+    // {
+    //     assembly {
 
-            let ptr := mload(0x40)
+    //         let ptr := mload(0x40)
 
-            // hash(user, slot)
-            mstore(ptr, user)
+    //         // hash(user, slot)
+    //         mstore(ptr, user)
 
             mstore(
                 add(ptr, 32),
@@ -694,26 +694,6 @@ contract YulStorageMasterPractice {
         }
     }
 }
-```
 
-# Important Note
 
-We are technically using `mstore` and `mload` here ONLY because:
 
-```solidity
-keccak256()
-```
-
-needs input from memory.
-
-But right now your focus should NOT be:
-
-* memory layout
-* free memory pointer internals
-* memory expansion
-
-Your focus should be ONLY:
-
-# “How storage locations are computed.”
-
-Later when you study memory deeply, this whole file will suddenly make even more sense.
