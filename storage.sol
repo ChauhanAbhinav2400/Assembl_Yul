@@ -63,9 +63,7 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 value)
     {
-        assembly {
-            value := sload(slot)
-        }
+       
     }
 
     function writeSlot(
@@ -74,9 +72,7 @@ contract YulStorageMasterPractice {
     )
         public
     {
-        assembly {
-            sstore(slot, value)
-        }
+       
     }
 
     // =====================================================
@@ -97,9 +93,7 @@ contract YulStorageMasterPractice {
         pure
         returns (uint256 slot)
     {
-        assembly {
-            slot := c.slot
-        }
+       
     }
 
     function getOffsets()
@@ -112,12 +106,7 @@ contract YulStorageMasterPractice {
             uint256 dOffset
         )
     {
-        assembly {
-            aOffset := a.offset
-            bOffset := b.offset
-            cOffset := c.offset
-            dOffset := d.offset
-        }
+       
     }
 
     // =====================================================
@@ -129,23 +118,7 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 result)
     {
-        assembly {
-
-            // load whole slot
-            let value := sload(c.slot)
-
-            // move c to right side
-            let shifted := shr(
-                mul(c.offset, 8),
-                value
-            )
-
-            // keep only uint16
-            result := and(
-                shifted,
-                0xFFFF
-            )
-        }
+       
     }
 
     // =====================================================
@@ -157,37 +130,7 @@ contract YulStorageMasterPractice {
     )
         public
     {
-        assembly {
-
-            // load full slot
-            let value := sload(c.slot)
-
-            // create mask to clear old c
-            let mask := not(
-                shl(
-                    mul(c.offset, 8),
-                    0xFFFF
-                )
-            )
-
-            // clear old c
-            value := and(value, mask)
-
-            // move new value into correct place
-            let shiftedNew := shl(
-                mul(c.offset, 8),
-                newC
-            )
-
-            // merge
-            value := or(
-                value,
-                shiftedNew
-            )
-
-            // save back
-            sstore(c.slot, value)
-        }
+        
     }
 
     // =====================================================
@@ -290,23 +233,7 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 value)
     {
-        assembly {
-
-            // get free memory pointer
-            let ptr := mload(0x40)
-
-            // store slot in memory
-            mstore(ptr, dynamicArray.slot)
-
-            // hash(slot)
-            let base := keccak256(ptr, 32)
-
-            // base + index
-            let location := add(base, index)
-
-            // load value
-            value := sload(location)
-        }
+       
     }
 
     // =====================================================
@@ -319,22 +246,7 @@ contract YulStorageMasterPractice {
     )
         public
     {
-        assembly {
-
-            let ptr := mload(0x40)
-
-            // store slot in memory
-            mstore(ptr, dynamicArray.slot)
-
-            // hash(slot)
-            let base := keccak256(ptr, 32)
-
-            // compute location
-            let location := add(base, index)
-
-            // write value
-            sstore(location, newValue)
-        }
+        
     }
 
     // =====================================================
@@ -356,11 +268,7 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 length)
     {
-        assembly {
-            length := sload(
-                smallArray.slot
-            )
-        }
+       
     }
 
     function readSmallArraySlot()
@@ -368,16 +276,7 @@ contract YulStorageMasterPractice {
         view
         returns (bytes32 value)
     {
-        assembly {
-
-            let ptr := mload(0x40)
-
-            mstore(ptr, smallArray.slot)
-
-            let base := keccak256(ptr, 32)
-
-            value := sload(base)
-        }
+        
     }
 
     // =====================================================
@@ -653,19 +552,19 @@ contract YulStorageMasterPractice {
         }
     }
 
-    // function writeAddressListValue(
-    //     address user,
-    //     uint256 index,
-    //     uint256 newValue
-    // )
-    //     public
-    // {
-    //     assembly {
+    function writeAddressListValue(
+        address user,
+        uint256 index,
+        uint256 newValue
+    )
+        public
+    {
+        assembly {
 
-    //         let ptr := mload(0x40)
+            let ptr := mload(0x40)
 
-    //         // hash(user, slot)
-    //         mstore(ptr, user)
+            // hash(user, slot)
+            mstore(ptr, user)
 
             mstore(
                 add(ptr, 32),
