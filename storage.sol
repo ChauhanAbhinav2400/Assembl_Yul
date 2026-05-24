@@ -63,7 +63,9 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 value)
     {
-       
+       assembly {
+        value := sload(slot)
+       }
     }
 
     function writeSlot(
@@ -72,7 +74,9 @@ contract YulStorageMasterPractice {
     )
         public
     {
-       
+       assembly {
+        sstore(slot , value)
+       }
     }
 
     // =====================================================
@@ -93,7 +97,9 @@ contract YulStorageMasterPractice {
         pure
         returns (uint256 slot)
     {
-       
+       assembly {
+        slot := a.slot
+       }
     }
 
     function getOffsets()
@@ -106,7 +112,12 @@ contract YulStorageMasterPractice {
             uint256 dOffset
         )
     {
-       
+       assembly{
+        aoffset := a.offset
+        boffset := b.offset
+        coffset := c.offset
+        doffset := d.offset
+       }
     }
 
     // =====================================================
@@ -118,7 +129,11 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 result)
     {
-       
+       assembly {
+        value := sload(c.slot)
+        value := shr(mul(c.offset , 8), value)
+        result := and(value , 0xFFFF)
+       }
     }
 
     // =====================================================
@@ -130,7 +145,17 @@ contract YulStorageMasterPractice {
     )
         public
     {
-        
+       assembly {
+        let slotValue := sload(c.slot)
+        // clear c bits
+        let clearMask := not(shl(mul(c.offset , 8 ) , 0xFFFF))
+        slotValue := and(slotValue , clearMask)
+
+        // set new c value
+        let newShiftedC := shl(mul(c.offset , 8) , newC)
+        slotValue := or(slotValue , newShiftedC)
+        sstore(c.slot , slotValue)
+       }   
     }
 
     // =====================================================
@@ -214,11 +239,8 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 length)
     {
-        assembly {
-
-            length := sload(
-                dynamicArray.slot
-            )
+        assembly{
+            length := sload(dynamicArray.slot)
         }
     }
 
@@ -233,7 +255,15 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 value)
     {
-       
+       assembly{
+        let dataStart := keccak256(
+            dynamicArray.slot,
+            32
+        )
+        sload(
+            add(dataStart , index)
+        )
+       }
     }
 
     // =====================================================
@@ -246,7 +276,16 @@ contract YulStorageMasterPractice {
     )
         public
     {
-        
+        assembly{
+            let dataStart := keccak256(
+                dynamicArray.slot,
+                32
+            )
+            sstore(
+                add(dataStart , index),
+                newValue
+            )
+        }
     }
 
     // =====================================================
@@ -268,7 +307,11 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 length)
     {
-       
+       assembly {
+        sload(
+            smallArray.slot
+        )
+       }
     }
 
     function readSmallArraySlot()
@@ -307,53 +350,29 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 value)
     {
-        assembly {
+       assembly{
+        let hash  : = keccak256(
+            myMapping.slot,
+            key
+        )
+        value := sload(hash)
 
-            let ptr := mload(0x40)
-
-            // store key
-            mstore(ptr, key)
-
-            // store slot
-            mstore(
-                add(ptr, 32),
-                myMapping.slot
-            )
-
-            // hash(key, slot)
-            let location := keccak256(
-                ptr,
-                64
-            )
-
-            value := sload(location)
-        }
+       }
     }
 
     function writeMapping(
         uint256 key,
         uint256 newValue
     )
-        public
+        public    
     {
-        assembly {
-
-            let ptr := mload(0x40)
-
-            mstore(ptr, key)
-
-            mstore(
-                add(ptr, 32),
-                myMapping.slot
-            )
-
-            let location := keccak256(
-                ptr,
-                64
-            )
-
-            sstore(location, newValue)
-        }
+       assembly {
+         let hash  : = keccak256(
+            myMapping.slot,
+            key
+        )
+        sstore(hash, newValue)
+       }
     }
 
     // =====================================================
@@ -383,38 +402,17 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 value)
     {
-        assembly {
-
-            let ptr := mload(0x40)
-
-            // first hash
-            mstore(ptr, k1)
-
-            mstore(
-                add(ptr, 32),
-                nested.slot
-            )
-
-            let firstHash := keccak256(
-                ptr,
-                64
-            )
-
-            // second hash
-            mstore(ptr, k2)
-
-            mstore(
-                add(ptr, 32),
-                firstHash
-            )
-
-            let finalLocation := keccak256(
-                ptr,
-                64
-            )
-
-            value := sload(finalLocation)
-        }
+       assembly {
+        let hash1 := keccak256(
+            nested.slot,
+            k1
+        )
+        let hash2 := keccak256(
+            hash1,
+            k2
+        )
+        value := sload(hash2)
+       }
     }
 
     function writeNested(
@@ -424,38 +422,17 @@ contract YulStorageMasterPractice {
     )
         public
     {
-        assembly {
-
-            let ptr := mload(0x40)
-
-            // first hash
-            mstore(ptr, k1)
-
-            mstore(
-                add(ptr, 32),
-                nested.slot
-            )
-
-            let firstHash := keccak256(
-                ptr,
-                64
-            )
-
-            // second hash
-            mstore(ptr, k2)
-
-            mstore(
-                add(ptr, 32),
-                firstHash
-            )
-
-            let finalLocation := keccak256(
-                ptr,
-                64
-            )
-
-            sstore(finalLocation, newValue)
-        }
+       assembly {
+        let hash1 := keccak256(
+            nested.slot,
+            k1
+        )
+        let hash2 := keccak256(
+            hash1,
+            k2
+        )
+        sstore(hash2, newValue)
+       }
     }
 
     // =====================================================
@@ -489,24 +466,12 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 length)
     {
-        assembly {
-
-            let ptr := mload(0x40)
-
-            mstore(ptr, user)
-
-            mstore(
-                add(ptr, 32),
-                addressToList.slot
+       assembly {
+        length := sload(
+            keccak256(
+                user, addressToList.slot
             )
-
-            let location := keccak256(
-                ptr,
-                64
-            )
-
-            length := sload(location)
-        }
+        )}
     }
 
     function readAddressListValue(
@@ -517,39 +482,19 @@ contract YulStorageMasterPractice {
         view
         returns (uint256 value)
     {
-        assembly {
-
-            let ptr := mload(0x40)
-
-            // hash(user, slot)
-            mstore(ptr, user)
-
-            mstore(
-                add(ptr, 32),
-                addressToList.slot
-            )
-
-            let lengthLocation := keccak256(
-                ptr,
-                64
-            )
-
-            // hash(lengthLocation)
-            mstore(ptr, lengthLocation)
-
-            let dataStart := keccak256(
-                ptr,
-                32
-            )
-
-            // final location
-            let location := add(
-                dataStart,
-                index
-            )
-
-            value := sload(location)
-        }
+       assembly {
+        let lengthLocation := keccak256(
+            user , addressToList.slot
+        )
+        let dataStart := keccak256(
+            lengthLocation,
+             32
+         )
+        
+        value := sload(
+            add(dataStart , index)
+        )
+       }
     }
 
     function writeAddressListValue(
@@ -559,38 +504,22 @@ contract YulStorageMasterPractice {
     )
         public
     {
-        assembly {
+       assembly {
+       let lengthLocation := keccak256(
+        user , addressToList.slot
+       )
+       let dataStart := keccak256(
+        lengthLocation,
+         32
+       )
+        
+        sstore(
+            add(dataStart , index),
+            newValue
+        )
 
-            let ptr := mload(0x40)
 
-            // hash(user, slot)
-            mstore(ptr, user)
-
-            mstore(
-                add(ptr, 32),
-                addressToList.slot
-            )
-
-            let lengthLocation := keccak256(
-                ptr,
-                64
-            )
-
-            // hash again
-            mstore(ptr, lengthLocation)
-
-            let dataStart := keccak256(
-                ptr,
-                32
-            )
-
-            let location := add(
-                dataStart,
-                index
-            )
-
-            sstore(location, newValue)
-        }
+       }
     }
 }
 
