@@ -46,3 +46,96 @@ contract MemoryBootcamp1  {
 
     }
 }
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract MemoryBootcamp2 {
+
+    // =====================================================
+    // EXERCISE 1
+    // =====================================================
+
+    function ex1()
+        public
+        pure
+        returns (
+            uint256 beforePtr,
+            uint256 afterPtr
+        )
+    {
+        assembly {
+            beforePtr := mload(0x40) 
+            mstore(beforePtr , 123) 
+            afterPtr := mload(0x40)
+        }
+       
+        }
+   
+
+    // =====================================================
+    // EXERCISE 2
+    // =====================================================
+
+    function ex2()
+        public
+        pure
+        returns (
+            uint256 ptr,
+            uint256 first,
+            uint256 second
+        )
+    {
+        
+    }
+
+    // =====================================================
+    // EXERCISE 3
+    // =====================================================
+
+    function ex3()
+        public
+        pure
+        returns (
+            uint256 ptr,
+            uint256 length,
+            uint256 first,
+            uint256 second
+        )
+    {
+        
+    }
+
+    // =====================================================
+    // EXERCISE 4
+    // =====================================================
+
+    function ex4()
+        public
+        pure
+        returns (
+            uint256 beforePtr,
+            uint256 afterPtr,
+            uint256 size
+        )
+    {
+      
+    }
+
+    // =====================================================
+    // EXERCISE 5
+    // =====================================================
+
+    function ex5()
+        public
+        pure
+        returns (
+            uint256 ptr,
+            uint256 x,
+            uint256 y
+        )
+    {
+        
+    }
+}
