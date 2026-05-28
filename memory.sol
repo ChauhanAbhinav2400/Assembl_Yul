@@ -282,3 +282,331 @@ contract MemoryBootcamp3 {
      }
     }
 }
+
+
+
+contract MemoryBootcamp4 {
+
+    // =====================================================
+    // EXERCISE 1
+    // =====================================================
+
+    function ex1()
+        public
+        pure
+    {
+       assembly {
+        mstore(0x80 , 123)
+        revert(0x80 , 32)
+       }
+    }
+
+    // =====================================================
+    // EXERCISE 2
+    // =====================================================
+
+    function ex2()
+        public
+        pure
+    {
+        assembly {
+
+            mstore(0x80 , 23)
+            revert (0x90 , 32)
+        }
+    }
+
+    // =====================================================
+    // EXERCISE 3
+    // =====================================================
+
+    function ex3(
+        uint256 x
+    )
+        public
+        pure
+        returns (uint256)
+    {
+        assembly {
+
+            if lt(x, 10) {
+
+                mstore(
+                    0x80,
+                    123456
+                )
+
+                revert(0x80, 32)
+            }
+
+            mstore(0x80, x)
+
+            return(0x80, 32)
+        }
+    }
+
+    // =====================================================
+    // EXERCISE 4
+    // =====================================================
+
+    function ex4()
+        public
+        pure
+    {
+        assembly {
+
+            /*
+                Build fake revert string
+                manually.
+
+                Not full ABI encoding yet.
+
+                Just raw bytes.
+            */
+
+           mstore(0x80 , 0xDEADBEEF)
+           revert(0x80 , 32)
+        }
+    }
+
+    // =====================================================
+    // EXERCISE 5
+    // =====================================================
+
+    function ex5()
+        public
+        pure
+    {
+        assembly {
+
+            /*
+                malformed revert
+
+                only return
+                middle slice
+            */
+
+            mstore(
+                0x80,
+                0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+            )
+
+            revert(0x81, 31)
+        }
+    }
+
+    // =====================================================
+    // EXERCISE 6
+    // =====================================================
+
+    function ex6()
+        public
+        pure
+    {
+        assembly {
+
+            /*
+                Simulate:
+                revert CustomError()
+
+                Selector:
+                first 4 bytes
+            */
+
+            mstore(
+                0x80,
+                0x12345678
+            )
+
+           revert (0x80 , 4)
+        }
+    }
+}
+
+
+contract MemoryBootcamp5 {
+
+    // =====================================================
+    // EXERCISE 1
+    // =====================================================
+
+    function ex1()
+        public
+        pure
+        returns(bytes32 h)
+    {
+       // normally hash starting 32 bytes from memory
+       assembly {
+        mstore(0x80 , 123)
+        h := keccak256(
+            0x80,
+            32
+        )
+       }
+    }
+
+    // =====================================================
+    // EXERCISE 2
+    // =====================================================
+
+    function ex2()
+        public
+        pure
+        returns(
+            bytes32 hash1,
+            bytes32 hash2
+        )
+    {
+        assembly {
+
+          // hash 32 bytes starting from 0x80 
+          // hash 31 bytes starting from 0x81
+             mstore(0x80 , 12)
+             hash1 := keccak256(
+                0x80 ,
+                32
+             )
+             hash2 := keccak256(
+                0x81,
+                31
+             )
+
+
+        }
+    }
+
+    // =====================================================
+    // EXERCISE 3
+    // =====================================================
+
+    function ex3()
+        public
+        pure
+        returns(bytes32 h)
+    {
+        assembly {
+
+           // hash 64 bytes starting from 0x80
+           mstore(0x80 , 12)
+           mstore(0xA0 , 22)
+           h := keccak256(
+            0x80,
+            64
+           )
+        }
+    }
+
+    // =====================================================
+    // EXERCISE 4
+    // =====================================================
+
+    function ex4()
+        public
+        pure
+        returns(
+            bytes32 h1,
+            bytes32 h2
+        )
+    {
+        assembly {
+
+           //hash1 : 64 bytes starting from 0x80
+                //hash2 : 32 bytes starting from 0x80
+            let ptr :mload(0x40)
+            mstore(ptr ,12)
+              mstore(add(ptr,0x20) ,22)
+              h1 := keccak256(
+                ptr,
+                64
+              )
+              h2 := keccak256 (
+                ptr ,
+                32
+              )
+        }
+    }
+
+    // =====================================================
+    // EXERCISE 5
+    // =====================================================
+
+    function ex5(
+        uint256 key
+    )
+        public
+        pure
+        returns(bytes32 location)
+    {
+        assembly {
+
+            /*
+                Simulate:
+
+                mapping(uint=>uint)
+
+                location =
+                keccak256(
+                    key,
+                    slot
+                )
+            */
+
+               let slot := 7 
+               mstore(0x80 , key)
+               mstore(add(0x80 , 0x20) , slot)
+               location := keccak256(
+                0x80 ,
+                64
+               )
+        }
+    }
+
+    // =====================================================
+    // EXERCISE 6
+    // =====================================================
+
+    function ex6()
+        public
+        pure
+        returns(bytes32 location)
+    {
+        assembly {
+
+            /*
+                dynamic array base
+
+                keccak(slot)
+            */ 
+           let slot := 4
+           mstore(0x80 , slot)
+           location := keccak256(
+            0x80 ,
+            32
+           )    
+        }
+    }
+
+    // =====================================================
+    // EXERCISE 7
+    // =====================================================
+
+    function ex7()
+        public
+        pure
+        returns(bytes32 h)
+    {
+        assembly {
+
+            /*
+                hash only first byte
+            */
+           mstore(0x80 , 12)
+
+           h := keccak256(
+            0x9f,
+            1
+           )
+           
+        }
+    }
+}
