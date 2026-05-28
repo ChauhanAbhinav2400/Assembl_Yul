@@ -512,7 +512,7 @@ contract MemoryBootcamp5 {
 
            //hash1 : 64 bytes starting from 0x80
                 //hash2 : 32 bytes starting from 0x80
-            let ptr :mload(0x40)
+            let ptr := mload(0x40)
             mstore(ptr ,12)
               mstore(add(ptr,0x20) ,22)
               h1 := keccak256(
