@@ -48,9 +48,6 @@ contract MemoryBootcamp1  {
 }
 
 
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-
 contract MemoryBootcamp2 {
 
     // =====================================================
@@ -67,11 +64,12 @@ contract MemoryBootcamp2 {
     {
         assembly {
             beforePtr := mload(0x40) 
-            mstore(beforePtr , 123) 
+            mstore(beforePtr , 123)
+            mstore(0x40 , add(beforePtr , 0x20)) 
             afterPtr := mload(0x40)
         }
        
-        }
+    }
    
 
     // =====================================================
@@ -87,7 +85,15 @@ contract MemoryBootcamp2 {
             uint256 second
         )
     {
-        
+        assembly {
+            ptr := mload(0x40)
+            mstore(ptr,12)
+            mstore(add(ptr,0x20),22)
+            // update pointer 
+            mstore(0x40 ,add(ptr,0x40))
+            first := mload(ptr)
+            second := mload(add(ptr,0x20))
+        }
     }
 
     // =====================================================
@@ -105,6 +111,17 @@ contract MemoryBootcamp2 {
         )
     {
         
+        assembly {
+
+            ptr := mload(0x40)
+            mstore(ptr,2)
+            mstore(add(ptr,0x20),11)
+            mstore(add(ptr,0x40),22)
+            mstore(0x40 , add(ptr,0x60))
+            length := mload(ptr)
+            first := mload(add(ptr,0x20))
+            second := mload(add(ptr ,0x40))
+        }
     }
 
     // =====================================================
@@ -120,7 +137,12 @@ contract MemoryBootcamp2 {
             uint256 size
         )
     {
-      
+      assembly{
+        beforePtr := mload(0x40)
+        mstore(0x200, 777)
+        afterPtr := mload(0x40)
+        size := msize()
+      }
     }
 
     // =====================================================
@@ -136,6 +158,127 @@ contract MemoryBootcamp2 {
             uint256 y
         )
     {
-        
+        assembly{
+            ptr := mload(0x40)
+           mstore(ptr , 20)
+           mstore(add(ptr,0x20),29)
+           mstore(0x40 , add(ptr,0x40))
+           x := mload(ptr)
+           y := mload(add(ptr,0x20))
+        }
+    }
+}
+
+
+
+contract MemoryBootcamp3 {
+
+    // =====================================================
+    // EXERCISE 1
+    // =====================================================
+
+    function ex1()
+        public
+        pure
+        returns (uint256)
+    {
+      assembly{
+        let ptr := mload(0x40)
+        mstore(ptr , 123)
+        return(ptr,0x20)
+      } 
+    }
+
+    // =====================================================
+    // EXERCISE 2
+    // =====================================================
+
+    function ex2()
+        public
+        pure
+        returns (
+            uint256,
+            uint256
+        )
+    {
+         assembly {
+            let ptr := mload(0x40)
+            mstore(ptr , 12) 
+            mstore(add(ptr , 0x20) , 22)
+            return(ptr , 0x40)
+         }
+    }
+
+    // =====================================================
+    // EXERCISE 3
+    // =====================================================
+
+    function ex3()
+        public
+        pure
+        returns (bytes32)
+    {
+       assembly {
+        mstore(0x80 , 123)
+        return(0x90 , 0x20)
+       }
+    }
+
+    // =====================================================
+    // EXERCISE 4
+    // =====================================================
+
+    function ex4()
+        public
+        pure
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+       assembly {
+        mstore(0x80 , 123)
+        mstore(0xA0 , 321)
+        mstore(0xC0 , 74)
+        return (0x80 , 96)
+       }
+    }
+
+    // =====================================================
+    // EXERCISE 5
+    // =====================================================
+
+    function ex5()
+        public
+        pure
+        returns (uint256)
+    {
+       assembly {
+        mstore(0x80 , 123)
+        return(0x81 , 32)
+       }
+    }
+
+
+    // =====================================================
+    // EXERCISE 6
+    // =====================================================
+
+    function ex6()
+        public
+        pure
+        returns (bytes memory)
+    {
+      assembly {
+      let ptr := mload(0x40)
+      mstore(ptr , 32)
+      mstore(add(ptr,0x20),3)
+      mstore8(add(ptr,64), 34)
+      mstore8(add(ptr,65),45)
+      mstore8( add(ptr ,66),56)
+      mstore(0x40,add(ptr,0x60))
+      return(ptr,0x60)
+     }
     }
 }
