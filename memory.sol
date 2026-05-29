@@ -610,3 +610,202 @@ contract MemoryBootcamp5 {
         }
     }
 }
+
+
+
+contract MemoryBootcamp6 {
+
+    /*
+        event OneNumber(
+            uint value
+        );
+    */
+
+    function ex1() public {
+
+        assembly {
+
+            /*
+                no indexed args
+
+                data:
+                55
+            */
+           mstore(0x80 , 55)
+           log0(
+            0x80,
+            32
+           )
+
+           
+        }
+    }
+
+    /*
+        event IndexedValue(
+            uint indexed x
+        );
+    */
+
+    function ex2() public {
+
+        assembly {
+
+            /*
+                topic:
+                77
+
+                no data
+            */
+           log1(
+            0x00,
+            0,
+            77
+           )
+
+           
+        }
+    }
+
+    /*
+        event TwoIndexed(
+            uint indexed a,
+            uint indexed b
+        );
+    */
+
+    function ex3() public {
+
+        assembly {
+            /*
+                topics:
+                11
+                22
+
+                no data
+            */
+          log2(
+            0x00,
+            0,
+            11,
+            22
+          )
+          
+        }
+    }
+
+    /*
+        event Mixed(
+            uint indexed a,
+            uint value
+        );
+    */
+
+    function ex4() public {
+
+        assembly {
+
+            /*
+                value goes
+                into memory
+            */
+           mstore(0x80 , 123)
+           log1(
+            0x80,
+            32,
+            31
+           )
+
+          
+        }
+    }
+
+    /*
+        Simulate:
+
+        event Transfer(
+            address indexed from,
+            address indexed to,
+            uint amount
+        )
+    */
+
+    function ex5(
+        address from,
+        address to,
+        uint amount
+    )
+        public
+    {
+        bytes32 sig = keccak256(
+            "Transfer(address,address,uint256)"
+        )
+        assembly {
+
+            /*
+                data section
+            */
+           mstore(0x80 , amount)
+           log3(
+            0x80,
+            32,
+            sig,
+            from,
+            to,
+           )
+
+           
+        }
+    }
+
+    /*
+        custom data payload
+    */
+
+    function ex6()
+        public
+    {
+        assembly {
+
+            mstore(
+                0x80,
+                111
+            )
+
+            mstore(
+                0xA0,
+                222
+            )
+
+            log0(
+                0x80,
+                64
+            )
+        }
+    }
+
+    /*
+        tricky one
+    */
+
+    function ex7()
+        public
+    {
+        assembly {
+
+            mstore(
+                0x80,
+                0xAA
+            )
+
+            /*
+                partial memory log
+            */
+
+            log0(
+                0x90,
+                16
+            )
+        }
+    }
+}
