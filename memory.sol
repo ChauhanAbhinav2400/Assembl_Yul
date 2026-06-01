@@ -780,7 +780,7 @@ contract MemoryBootcamp6 {
             log0(
                 0x80,
                 64
-            )
+            );
         }
     }
 
