@@ -1,16 +1,56 @@
-staticcall(
-    gas(),
-    target,
-    ptr,
-    68,
-    outPtr,
-    32
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract CalldataBootcamp1 {
+
+    function ex1()
+        external
+        pure
+        returns(uint256 size)
+    {
+       // load size of calldata
+    }
+
+    function ex2()
+    external
+    pure
+    returns(bytes32 value)
+{
+   // load selector 
+}
+ 
+ function ex3(
+    uint256 x
 )
-ptr
-↓
+    external
+    pure
+    returns(bytes32 value)
+{
+    // load x 
+}
 
-| selector (4 bytes) |
 
-| 2 padded to 32 bytes |
+function ex4(
+    uint256 x,
+    uint256 y
+)
+    external
+    pure
+    returns(
+        bytes32 a,
+        bytes32 b
+    )
+{
+    
+}
 
-| 5 padded to 32 bytes |
+
+function ex5()
+    external
+    pure
+    returns(bytes32 value)
+{
+   
+}
+
+}
