@@ -9,6 +9,9 @@ contract CalldataBootcamp1 {
         returns(uint256 size)
     {
        // load size of calldata
+       assembly {
+        size := calldatasize()
+       }
     }
 
     function ex2()
@@ -17,6 +20,9 @@ contract CalldataBootcamp1 {
     returns(bytes32 value)
 {
    // load selector 
+   assembly {
+    value := calldataload(0)
+   }
 }
  
  function ex3(
@@ -27,6 +33,9 @@ contract CalldataBootcamp1 {
     returns(bytes32 value)
 {
     // load x 
+    assembly {
+        value := calldataload(4)
+    }
 }
 
 
@@ -41,7 +50,11 @@ function ex4(
         bytes32 b
     )
 {
-    
+    assembly {
+        a := calldataload(4)
+        b := calldataload(36)
+
+    }
 }
 
 
@@ -50,7 +63,9 @@ function ex5()
     pure
     returns(bytes32 value)
 {
-   
+   assembly {
+    value := calldataload(999)
+   }
 }
 
 }
