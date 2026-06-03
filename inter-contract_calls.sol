@@ -69,3 +69,149 @@ function ex5()
 }
 
 }
+
+
+
+//=============================================================================================
+
+
+
+contract CalldataBootcamp2 {  
+
+
+function ex1()
+    external
+    pure
+    returns(bytes32 value)
+{
+    assembly {
+   calldatacopy(
+    0x80 ,
+    0,
+    calldatasize()
+   )
+   value := mload(0x80)
+    }
+   
+}
+
+
+function ex2()
+    external
+    pure
+    returns(bytes32 value)
+{
+    assembly {
+
+        calldatacopy(
+            0x80,
+            0,
+            4
+        )
+
+        value := mload(0x80)
+
+    }
+}
+
+
+function ex3(
+    uint256 x
+)
+    external
+    pure
+    returns(bytes32 value)
+{
+    assembly {
+
+        calldatacopy(
+            0x80,
+            4,
+            32
+        )
+
+        value := mload(0x80)
+
+    }
+}
+
+
+
+function ex4(
+    uint256 a,
+    uint256 b
+)
+    external
+    pure
+    returns(
+        bytes32 first,
+        bytes32 second
+    )
+{
+    assembly {
+
+        calldatacopy(
+            0x80,
+            4,
+            64
+        )
+
+        first := mload(0x80)
+
+        second := mload(
+            add(
+                0x80,
+                32
+            )
+        )
+    }
+}
+
+
+
+function ex5(
+    uint256 x
+)
+    external
+    pure
+    returns(bytes32 value)
+{
+    assembly {
+
+        calldatacopy(
+            0x80,
+            20,
+            8
+        )
+
+        value := mload(0x80)
+
+    }
+}
+
+
+
+function ex6()
+    external
+    pure
+    returns(bytes32 value)
+{
+    assembly {
+
+        calldatacopy(
+            0x80,
+            999,
+            32
+        )
+
+        value := mload(0x80)
+
+    }
+}
+
+function getselectorofex1 () pure public returns(bytes4 selector) {
+    return bytes4(keccak256("ex1()"));
+}
+
+
+} 
