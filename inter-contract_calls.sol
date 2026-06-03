@@ -180,3 +180,69 @@ contract SelectorBootcamp {
         }
     }
 }
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract Target {
+    function getTwo() external pure returns (uint256) {
+        return 2;
+    }
+
+    function get99(uint256 x) external pure returns (uint256) {
+        if (x == 8) {
+            return 88;
+        }
+
+        return 99;
+    }
+
+    function add(uint256 a, uint256 b) external pure returns (uint256) {
+        return a + b;
+    }
+}
+
+contract Caller {
+    function ex1() external pure returns (bytes32 value) {
+        bytes4 selector = bytes4(keccak256("getTwo()"));
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, shl(224, selector))
+            value := mload(ptr)
+        }
+    }
+
+    function ex2(address target) external view returns (uint256) {
+        bytes4 selector = bytes4(keccak256("getTwo()"));
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, selector) // getTwo()
+
+            let success := staticcall(gas(), target, ptr, 4, ptr, 32)
+
+            if iszero(success) {
+                revert(0, 0)
+            }
+
+            return(ptr, 32)
+        }
+    }
+
+    function ex3(address target) external view returns (uint256) {
+        bytes4 selector = bytes4(keccak256("get99(uint256)"));
+
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, selector)
+            mstore(add(ptr, 4), 8)
+
+            let success := staticcall(gas(), target, ptr, 36, ptr, 32)
+
+            if iszero(success) {
+                revert(0, 0)
+            }
+
+            return(ptr, 32)
+        }
+    }
+}
