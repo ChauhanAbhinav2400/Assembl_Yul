@@ -16,3 +16,24 @@ object "Simple" {
         }
     }
 }
+constructor
+
+↓
+
+dispatcher
+
+↓
+
+helper functions
+
+↓
+
+storage position functions
+
+↓
+
+return helpers
+
+↓
+
+business logic
